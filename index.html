@@ -2,70 +2,74 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API Test Reports</title>
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+      background-color: #fafafa;
+      margin: 0;
       padding: 20px;
     }
     h1 {
-      color: darkorange;
+      color: #ff6600;
     }
-    .buttons {
-      margin-bottom: 20px;
+    .history {
+      margin-top: 40px;
     }
-    .btn {
-      background-color: orange;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      margin-right: 10px;
-      cursor: pointer;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
+    .report-list {
+      list-style-type: none;
+      padding: 0;
     }
-    .btn:hover {
-      background-color: darkorange;
-    }
-    .section-title {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-    #reports {
-      background-color: white;
+    .report-list li {
       padding: 10px;
-      border-left: 4px solid green;
+      background: #fff;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .report-list a {
+      text-decoration: none;
+      color: #007acc;
+    }
+    .report-list .status-pass {
+      color: green;
+    }
+    .report-list .status-fail {
+      color: red;
     }
   </style>
 </head>
 <body>
-
   <h1>API Test Reports</h1>
 
-  <div class="buttons">
-    <a class="btn" href="https://github.com/kreotiff-dev/api-test-reports/actions/workflows/run-wms-smoke.yml" target="_blank">Запустить Smoke-тесты</a>
-    <a class="btn" href="https://github.com/kreotiff-dev/api-test-reports/actions/workflows/run-wms-regress.yml" target="_blank">Запустить Regress-тесты</a>
+  <div class="history">
+    <h2>Последние отчёты</h2>
+    <ul class="report-list" id="reportList">
+      <li>Загрузка отчётов...</li>
+    </ul>
   </div>
-
-  <div class="section-title">Последние отчёты</div>
-  <div id="reports">Загрузка...</div>
 
   <script>
     async function loadReports() {
       try {
-        const response = await fetch('./reports.json');
+        const response = await fetch('reports/history.json');
         const data = await response.json();
-        const list = data.map(report =>
-          `<div><a href="${report.url}" target="_blank">${report.name}</a> — <strong>${report.status}</strong></div>`
-        ).join('');
-        document.getElementById('reports').innerHTML = list;
-      } catch (err) {
-        document.getElementById('reports').innerText = 'Ошибка загрузки отчётов.';
+
+        const list = document.getElementById('reportList');
+        list.innerHTML = '';
+
+        data.slice(0, 10).forEach(report => {
+          const li = document.createElement('li');
+          const statusClass = report.status === 'pass' ? 'status-pass' : 'status-fail';
+          li.innerHTML = `<a href="${report.link}" target="_blank">${report.date} — <span class="${statusClass}">${report.status}</span></a>`;
+          list.appendChild(li);
+        });
+      } catch (e) {
+        document.getElementById('reportList').innerHTML = '<li>Ошибка загрузки отчётов.</li>';
       }
     }
+
     loadReports();
   </script>
 </body>
