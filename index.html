@@ -42,35 +42,30 @@
   <div id="reports" class="report-list">Загрузка...</div>
 
   <script>
-    fetch('reports/index.json')
-      .then(response => {
-        if (!response.ok) throw new Error("Ошибка загрузки index.json");
-        return response.json();
-      })
-      .then(data => {
-        const container = document.getElementById("reports");
-        container.innerHTML = "";
-        if (data.length === 0) {
-          container.innerText = "Пока нет отчётов.";
-          return;
-        }
+  fetch('reports/index.json')
+    .then(response => response.json())
+    .then(data => {
+      const container = document.getElementById('report-list');
+      data.reverse().slice(0, 10).forEach(report => {
+        const li = document.createElement('li');
 
-        data.forEach(report => {
-          const link = document.createElement("a");
-          link.href = report.url;
-          link.innerText = `${report.type.toUpperCase()} – ${report.date}`;
-          link.className = "report-link";
+        const statusIcon = document.createElement('span');
+        statusIcon.textContent = report.status === 'passed' ? '🟢' : '🔴';
+        statusIcon.style.marginRight = '8px';
 
-          const div = document.createElement("div");
-          div.className = "report-item";
-          div.appendChild(link);
-          container.appendChild(div);
-        });
-      })
-      .catch(err => {
-        document.getElementById("reports").innerHTML = '<span class="error">Ошибка загрузки отчётов.</span>';
-        console.error(err);
+        const link = document.createElement('a');
+        link.href = report.url;
+        link.textContent = `${report.type.toUpperCase()} – ${report.date}`;
+
+        li.appendChild(statusIcon);
+        li.appendChild(link);
+        container.appendChild(li);
       });
-  </script>
+    })
+    .catch(error => {
+      document.getElementById('report-list').innerHTML = '<li>Ошибка загрузки отчётов.</li>';
+      console.error('Error:', error);
+    });
+</script>
 </body>
 </html>
