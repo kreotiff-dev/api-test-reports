@@ -1,4 +1,17 @@
 [
-{"type": "smoke", "date": "2025-04-13_18-20-47", "url": "reports/smoke/2025-04-13_18-20-47/index.html"},
-{"type": "regress", "date": "2025-04-13_18-20-50", "url": "reports/regress/2025-04-13_18-20-50/index.html"}
+  {
+    "type": "smoke",
+    "date": "2025-04-13_18-31-59",
+    "url": "reports/smoke/2025-04-13_18-31-59/index.html"
+  },
+  {
+    "type": "smoke",
+    "date": "2025-04-13_18-20-47",
+    "url": "reports/smoke/2025-04-13_18-20-47/index.html"
+  },
+  {
+    "type": "regress",
+    "date": "2025-04-13_18-20-50",
+    "url": "reports/regress/2025-04-13_18-20-50/index.html"
+  }
 ]
