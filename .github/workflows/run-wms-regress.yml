@@ -22,10 +22,6 @@ jobs:
         run: |
           npm install -g newman newman-reporter-allure allure-commandline
 
-      - name: Generate timestamp
-        id: timestamp
-        run: echo "ts=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
-
       - name: Run Newman tests
         run: |
           newman run collections/WMS-regress.json -e environments/env-wms.json -r cli,allure --reporter-allure-export allure-results || true
@@ -34,33 +30,40 @@ jobs:
         run: |
           allure generate allure-results -o allure-report --clean
 
-      - name: Publish report and update index
+      - name: Publish report to GitHub Pages
         run: |
+          export REPORT_TYPE=regress
+          export REPORT_DIR=reports/$REPORT_TYPE/$(date +'%Y-%m-%d_%H-%M-%S')
+
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin gh-pages || echo "no gh-pages yet"
+          git fetch origin gh-pages || echo "No gh-pages yet"
           git switch gh-pages || git checkout --orphan gh-pages
 
-          REPORT_DIR="reports/regress/${{ steps.timestamp.outputs.ts }}"
-          mkdir -p "$REPORT_DIR"
-          cp -r allure-report/* "$REPORT_DIR/"
+          mkdir -p $REPORT_DIR
+          cp -r allure-report/* $REPORT_DIR/
           touch .nojekyll
 
-          INDEX_FILE="reports/index.json"
-          REPORT_INFO="{\"type\": \"regress\", \"date\": \"${{ steps.timestamp.outputs.ts }}\", \"url\": \"$REPORT_DIR/index.html\"}"
-
-          if [ -f "$INDEX_FILE" ]; then
-            CONTENT=$(cat "$INDEX_FILE" | jq .)
+          # Определим статус отчета
+          if grep -q '"status":"failed"' allure-results/widgets/summary.json; then
+            STATUS=failed
           else
-            CONTENT="[]"
+            STATUS=passed
           fi
 
-          UPDATED=$(echo "$CONTENT" | jq "[ $REPORT_INFO ] + . | .[:10]")
-          echo "$UPDATED" > "$INDEX_FILE"
+          # Добавим запись об отчёте в index.json
+          mkdir -p reports
+          if [ -f reports/index.json ]; then
+            tail -n +2 reports/index.json | sed '$ d' > tmp.json || true
+            echo "," >> tmp.json
+          else
+            echo "[" > tmp.json
+          fi
+          echo "{\"type\": \"$REPORT_TYPE\", \"date\": \"$(basename $REPORT_DIR)\", \"url\": \"$REPORT_DIR/index.html\", \"status\": \"$STATUS\"}" >> tmp.json
+          echo "]" >> tmp.json
+          mv tmp.json reports/index.json
 
           git add .
-          git commit -m "Publish regress report at $REPORT_DIR"
+          git commit -m "Publish $REPORT_TYPE report: $REPORT_DIR"
           git push origin gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
