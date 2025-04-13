@@ -1,4 +1,4 @@
-name: Run WMS Smoke Tests
+name: Run WMS smoke Tests
 
 on:
   workflow_dispatch:
@@ -8,8 +8,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout main branch
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -18,9 +20,7 @@ jobs:
 
       - name: Install Newman and Allure
         run: |
-          npm install -g newman
-          npm install -g newman-reporter-allure
-          npm install -g allure-commandline
+          npm install -g newman newman-reporter-allure allure-commandline
 
       - name: Run Newman tests
         run: |
@@ -30,8 +30,18 @@ jobs:
         run: |
           allure generate allure-results -o allure-report --clean
 
-      - name: Upload Allure report
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report-smoke
-          path: allure-report/
+      - name: Publish report to gh-pages
+        run: |
+          export REPORT_DIR=reports/smoke/$(date +'%Y-%m-%d_%H-%M-%S')
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages || echo "No gh-pages yet"
+          git switch gh-pages || git checkout --orphan gh-pages
+          mkdir -p $REPORT_DIR
+          cp -r allure-report/* $REPORT_DIR/
+          touch .nojekyll
+          git add .
+          git commit -m "Publish smoke report: $REPORT_DIR"
+          git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
