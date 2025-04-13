@@ -1,0 +1,37 @@
+name: Run WMS Regress Tests
+
+on:
+  workflow_dispatch: # Позволяет запускать вручную или через API
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Newman and Allure
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-allure
+          npm install -g allure-commandline
+
+      - name: Run Newman tests
+        run: |
+          newman run collections/WMS-regress.json -e environments/env-wms.json -r allure --reporter-allure-export allure-results
+
+      - name: Generate Allure report
+        run: |
+          allure generate allure-results -o allure-report --clean
+
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report-regress
+          path: allure-report/
