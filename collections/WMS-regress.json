@@ -1,0 +1,1031 @@
+{
+	"info": {
+		"_postman_id": "d4317fb1-bb45-4696-8d14-8ca61dad3442",
+		"name": "WMS Заказы и Сборка",
+		"description": "Тесты для модуля заказов и сборки в WMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "234485",
+		"_collection_link": "https://cloudy-meadow-296313.postman.co/workspace/QA-Learn-1~6fcaa304-5d5f-498e-abf7-3f8a726c688a/collection/234485-d4317fb1-bb45-4696-8d14-8ca61dad3442?action=share&source=collection_link&creator=234485"
+	},
+	"item": [
+		{
+			"name": "0. Подготовка переменных",
+			"item": [
+				{
+					"name": "Генерация уникальных значений",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Генерация уникальных значений",
+									"var timestamp = new Date().getTime();",
+									"",
+									"// Уникальные ID для товаров и заказов",
+									"pm.globals.set(\"order_number\", \"ORD-\" + timestamp);",
+									"pm.globals.set(\"product_sku_1\", \"SKU-\" + timestamp + \"-1\");",
+									"pm.globals.set(\"product_sku_2\", \"SKU-\" + timestamp + \"-2\");",
+									"pm.globals.set(\"product_id_1\", \"PROD-\" + timestamp + \"-1\");",
+									"pm.globals.set(\"product_id_2\", \"PROD-\" + timestamp + \"-2\");",
+									"pm.globals.set(\"product_barcode_1\", \"BAR-\" + timestamp + \"-1\");",
+									"pm.globals.set(\"product_barcode_2\", \"BAR-\" + timestamp + \"-2\");",
+									"pm.globals.set(\"employee_id\", \"EMP-\" + timestamp);",
+									"",
+									"console.log(\"Уникальные значения сгенерированы:\");",
+									"console.log(\"Номер заказа: \" + pm.globals.get(\"order_number\"));",
+									"console.log(\"SKU 1: \" + pm.globals.get(\"product_sku_1\"));",
+									"console.log(\"SKU 2: \" + pm.globals.get(\"product_sku_2\"));",
+									"",
+									"pm.test(\"Уникальные переменные сгенерированы\", function () {",
+									"    pm.expect(pm.globals.get(\"order_number\")).to.not.be.undefined;",
+									"    pm.expect(pm.globals.get(\"product_sku_1\")).to.not.be.undefined;",
+									"    pm.expect(pm.globals.get(\"employee_id\")).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Проверка существующих ячеек",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"// Используем существующие ячейки, если они есть",
+									"if (jsonData && jsonData.length > 0) {",
+									"    // Берем первую ячейку",
+									"    var locationId = jsonData[0]._id || jsonData[0].id;",
+									"    pm.globals.set(\"test_location_id\", locationId);",
+									"    console.log(\"Установлен test_location_id: \" + locationId);",
+									"    pm.globals.set(\"test_location_barcode\", jsonData[0].barcode);",
+									"    console.log(\"Установлен test_location_barcode: \" + jsonData[0].barcode);",
+									"} else {",
+									"    console.log(\"Существующие ячейки не найдены, нужно создать новую\");",
+									"    pm.globals.set(\"need_to_create_location\", true);",
+									"}",
+									"",
+									"pm.test(\"Запрос выполнен успешно\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание тестовой ячейки (если нужно)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"var locationId = jsonData._id || jsonData.id;",
+									"pm.globals.set(\"test_location_id\", locationId);",
+									"pm.globals.set(\"test_location_barcode\", jsonData.barcode);",
+									"",
+									"pm.test(\"Тестовая ячейка успешно создана\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    console.log(\"Создана тестовая ячейка: \" + locationId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Пропускаем запрос, если ячейка уже существует",
+									"if (!pm.globals.get(\"need_to_create_location\")) {",
+									"    postman.setNextRequest(\"1.1 Создание товара 1\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"barcode\": \"LOC-TEST-{{$timestamp}}\",\n  \"zone\": \"A\",\n  \"aisle\": \"01\",\n  \"rack\": \"01\",\n  \"level\": \"01\",\n  \"position\": \"01\",\n  \"capacity\": 100\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Подготовка тестовых товаров",
+			"item": [
+				{
+					"name": "1.1 Создание товара 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"var productId = jsonData._id || jsonData.id;",
+									"pm.globals.set(\"test_product_id_1\", productId);",
+									"",
+									"pm.test(\"Товар 1 успешно создан\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.sku).to.eql(pm.globals.get(\"product_sku_1\"));",
+									"    pm.expect(jsonData.name).to.eql(\"Тестовый товар для заказа 1\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sku\": \"{{product_sku_1}}\",\n  \"productId\": \"{{product_id_1}}\",\n  \"name\": \"Тестовый товар для заказа 1\",\n  \"barcode\": \"{{product_barcode_1}}\",\n  \"category\": \"Электроника\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 Создание товара 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"var productId = jsonData._id || jsonData.id;",
+									"pm.globals.set(\"test_product_id_2\", productId);",
+									"",
+									"pm.test(\"Товар 2 успешно создан\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.sku).to.eql(pm.globals.get(\"product_sku_2\"));",
+									"    pm.expect(jsonData.name).to.eql(\"Тестовый товар для заказа 2\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sku\": \"{{product_sku_2}}\",\n  \"productId\": \"{{product_id_2}}\",\n  \"name\": \"Тестовый товар для заказа 2\",\n  \"barcode\": \"{{product_barcode_2}}\",\n  \"category\": \"Одежда\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3 Добавление товара 1 в инвентарь",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товар 1 добавлен в инвентарь\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.sku).to.eql(pm.globals.get(\"product_sku_1\"));",
+									"    pm.expect(jsonData.actualQuantity).to.eql(50);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sku\": \"{{product_sku_1}}\",\n  \"locationId\": \"{{test_location_id}}\",\n  \"actualQuantity\": 50,\n  \"notes\": \"Добавление тестового товара 1 в инвентарь\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/adjust",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"adjust"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.4 Добавление товара 2 в инвентарь",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товар 2 добавлен в инвентарь\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.sku).to.eql(pm.globals.get(\"product_sku_2\"));",
+									"    pm.expect(jsonData.actualQuantity).to.eql(30);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sku\": \"{{product_sku_2}}\",\n  \"locationId\": \"{{test_location_id}}\",\n  \"actualQuantity\": 30,\n  \"notes\": \"Добавление тестового товара 2 в инвентарь\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/adjust",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"adjust"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Управление заказами",
+			"item": [
+				{
+					"name": "2.1 Создание заказа",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"var orderId = jsonData._id || jsonData.id;",
+									"pm.globals.set(\"test_order_id\", orderId);",
+									"",
+									"pm.test(\"Заказ успешно создан\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.orderNumber).to.eql(pm.globals.get(\"order_number\"));",
+									"    pm.expect(jsonData.status).to.eql(\"new\");",
+									"    pm.expect(jsonData.items.length).to.eql(2);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderNumber\": \"{{order_number}}\",\n  \"externalOrderId\": \"EXT-{{$timestamp}}\",\n  \"customer\": {\n    \"name\": \"Иван Петров\",\n    \"address\": \"ул. Пушкина, д. 10\",\n    \"phone\": \"+7(123)456-78-90\",\n    \"email\": \"test@example.com\"\n  },\n  \"items\": [\n    {\n      \"sku\": \"{{product_sku_1}}\",\n      \"quantity\": 2\n    },\n    {\n      \"sku\": \"{{product_sku_2}}\",\n      \"quantity\": 3\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Получение списка заказов",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Список заказов успешно получен\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    ",
+									"    // Проверяем, что наш заказ есть в списке",
+									"    var orderNumber = pm.globals.get(\"order_number\");",
+									"    var foundOrder = jsonData.find(order => order.orderNumber === orderNumber);",
+									"    pm.expect(foundOrder).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 Получение заказа по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Заказ по ID успешно получен\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.orderNumber).to.eql(pm.globals.get(\"order_number\"));",
+									"    pm.expect(jsonData.status).to.eql(\"new\");",
+									"    ",
+									"    // Проверяем наличие товаров",
+									"    pm.expect(jsonData.items.length).to.eql(2);",
+									"    ",
+									"    // Проверяем данные клиента",
+									"    pm.expect(jsonData.customer).to.have.property('name');",
+									"    pm.expect(jsonData.customer.name).to.eql(\"Иван Петров\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/{{test_order_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"{{test_order_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 Резервирование товаров заказа",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товары успешно зарезервированы\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.message).to.eql(\"Items reserved successfully\");",
+									"    ",
+									"    // Проверяем статус заказа",
+									"    pm.expect(jsonData.order.status).to.eql(\"processing\");",
+									"    ",
+									"    // Проверяем статусы товаров",
+									"    jsonData.order.items.forEach(function(item) {",
+									"        pm.expect(item.status).to.eql(\"reserved\");",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/{{test_order_id}}/reserve",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"{{test_order_id}}",
+								"reserve"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Сборка заказов",
+			"item": [
+				{
+					"name": "3.1 Создание задания на сборку",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"var taskId = jsonData._id || jsonData.id;",
+									"pm.globals.set(\"test_picking_task_id\", taskId);",
+									"",
+									"// Сохраняем ID первого элемента сборки для использования в следующих тестах",
+									"if (jsonData.items && jsonData.items.length > 0) {",
+									"    var firstItemId = jsonData.items[0]._id;",
+									"    pm.globals.set(\"test_picking_item_id_1\", firstItemId);",
+									"    ",
+									"    var secondItemId = jsonData.items[1]._id;",
+									"    pm.globals.set(\"test_picking_item_id_2\", secondItemId);",
+									"}",
+									"",
+									"pm.test(\"Задание на сборку успешно создано\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.status).to.eql(\"created\");",
+									"    pm.expect(jsonData.items.length).to.eql(2);",
+									"    ",
+									"    // Проверяем, что заказ правильно привязан",
+									"    pm.expect(jsonData.orderIds).to.include(pm.globals.get(\"test_order_id\"));",
+									"    ",
+									"    // Проверяем сотрудника",
+									"    pm.expect(jsonData.assignedTo).to.eql(pm.globals.get(\"employee_id\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderIds\": [\"{{test_order_id}}\"],\n  \"assignedTo\": \"{{employee_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/picking",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 Получение списка заданий на сборку",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Список заданий на сборку получен\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    ",
+									"    // Проверяем наличие нашего задания",
+									"    var taskId = pm.globals.get(\"test_picking_task_id\");",
+									"    var foundTask = jsonData.find(task => (task._id === taskId || task.id === taskId));",
+									"    pm.expect(foundTask).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/picking",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.3 Начало выполнения задания",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Задание переведено в работу\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"in_progress\");",
+									"    pm.expect(jsonData.startedAt).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/picking/{{test_picking_task_id}}/start",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking",
+								"{{test_picking_task_id}}",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.4 Сканирование ячейки",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Ячейка успешно отсканирована\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"in_progress\");",
+									"    pm.expect(jsonData._id).to.eql(pm.globals.get(\"test_picking_item_id_1\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"locationBarcode\": \"{{test_location_barcode}}\",\n  \"pickingItemId\": \"{{test_picking_item_id_1}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/picking/{{test_picking_task_id}}/scan-location",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking",
+								"{{test_picking_task_id}}",
+								"scan-location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.5 Сборка первого товара",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Первый товар успешно собран\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.pickingItem.pickedQuantity).to.eql(2);",
+									"    pm.expect(jsonData.pickingItem.status).to.eql(\"picked\");",
+									"    pm.expect(jsonData.remainingQuantity).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pickingItemId\": \"{{test_picking_item_id_1}}\",\n  \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/picking/{{test_picking_task_id}}/pick",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking",
+								"{{test_picking_task_id}}",
+								"pick"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.6 Сканирование ячейки для второго товара",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Ячейка успешно отсканирована для второго товара\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"in_progress\");",
+									"    pm.expect(jsonData._id).to.eql(pm.globals.get(\"test_picking_item_id_2\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"locationBarcode\": \"{{test_location_barcode}}\",\n  \"pickingItemId\": \"{{test_picking_item_id_2}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/picking/{{test_picking_task_id}}/scan-location",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking",
+								"{{test_picking_task_id}}",
+								"scan-location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.7 Сборка второго товара",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Второй товар успешно собран\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.pickingItem.pickedQuantity).to.eql(3);",
+									"    pm.expect(jsonData.pickingItem.status).to.eql(\"picked\");",
+									"    pm.expect(jsonData.remainingQuantity).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pickingItemId\": \"{{test_picking_item_id_2}}\",\n  \"quantity\": 3\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/picking/{{test_picking_task_id}}/pick",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking",
+								"{{test_picking_task_id}}",
+								"pick"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Проверка результатов",
+			"item": [
+				{
+					"name": "4.1 Проверка задания на сборку",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Задание на сборку завершено\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    // Ищем наше задание",
+									"    var taskId = pm.globals.get(\"test_picking_task_id\");",
+									"    var task = jsonData.find(t => (t._id === taskId || t.id === taskId));",
+									"    ",
+									"    pm.expect(task).to.not.be.undefined;",
+									"    pm.expect(task.status).to.eql(\"completed\");",
+									"    pm.expect(task.completedAt).to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/picking",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"picking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.2 Проверка статуса заказа",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Заказ в статусе 'собран'\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"picked\");",
+									"    ",
+									"    // Проверяем статусы товаров",
+									"    jsonData.items.forEach(function(item) {",
+									"        pm.expect(item.status).to.eql(\"picked\");",
+									"        pm.expect(item.pickedQuantity).to.eql(item.quantity);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/{{test_order_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"{{test_order_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.3 Проверка обновления инвентаря",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Инвентарь успешно обновлен\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    // Находим наши товары в инвентаре",
+									"    var sku1 = pm.globals.get(\"product_sku_1\");",
+									"    var sku2 = pm.globals.get(\"product_sku_2\");",
+									"    ",
+									"    var item1 = null;",
+									"    var item2 = null;",
+									"    ",
+									"    jsonData.forEach(function(item) {",
+									"        if (item.sku === sku1) {",
+									"            item1 = item;",
+									"        } else if (item.sku === sku2) {",
+									"            item2 = item;",
+									"        }",
+									"    });",
+									"    ",
+									"    if (item1) {",
+									"        // Проверяем, что количество уменьшилось на 2",
+									"        pm.expect(item1.quantity).to.eql(48);",
+									"    }",
+									"    ",
+									"    if (item2) {",
+									"        // Проверяем, что количество уменьшилось на 3",
+									"        pm.expect(item2.quantity).to.eql(27);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/inventory",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/wms/v1",
+			"type": "string"
+		}
+	]
+}

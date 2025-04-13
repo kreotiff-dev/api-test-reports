@@ -1,0 +1,777 @@
+{
+	"info": {
+		"_postman_id": "c5a5d27b-86ec-4754-a3aa-40c3a019ddb4",
+		"name": "WMS Тестирование",
+		"description": "Коллекция для тестирования функциональности WMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "234485",
+		"_collection_link": "https://cloudy-meadow-296313.postman.co/workspace/QA-Learn-1~6fcaa304-5d5f-498e-abf7-3f8a726c688a/collection/234485-c5a5d27b-86ec-4754-a3aa-40c3a019ddb4?action=share&source=collection_link&creator=234485"
+	},
+	"item": [
+		{
+			"name": "1. Подготовка",
+			"item": [
+				{
+					"name": "1.1 Создание ячейки 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.globals.set(\"locationId1\", jsonData.id);",
+									"",
+									"pm.test(\"Ячейка 1 успешно создана\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.barcode).to.eql(\"LOC-A01-01-01\");",
+									"    pm.expect(jsonData.status).to.eql(\"available\");",
+									"    pm.expect(jsonData.usedCapacity).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"timestamp\", new Date().getTime());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"barcode\": \"LOC-A01-01-01-{{timestamp}}\",\n  \"zone\": \"A\",\n  \"aisle\": \"01\",\n  \"rack\": \"01\",\n  \"level\": \"01\",\n  \"position\": \"01\",\n  \"capacity\": 100\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 Создание ячейки 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.globals.set(\"locationId2\", jsonData.id);",
+									"",
+									"pm.test(\"Ячейка 2 успешно создана\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.barcode).to.eql(\"LOC-A01-01-02\");",
+									"    pm.expect(jsonData.status).to.eql(\"available\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"barcode\": \"LOC-A01-01-02\",\n  \"zone\": \"A\",\n  \"aisle\": \"01\",\n  \"rack\": \"01\",\n  \"level\": \"01\",\n  \"position\": \"02\",\n  \"capacity\": 100\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3 Создание тележки для размещения",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.globals.set(\"cartId\", jsonData.id);",
+									"",
+									"pm.test(\"Тележка успешно создана\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.status).to.eql(\"free\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/placement-carts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"placement-carts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Приемка товаров",
+			"item": [
+				{
+					"name": "2.1 Создание накладной",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.globals.set(\"invoiceId\", jsonData._id);",
+									"",
+									"pm.test(\"Накладная успешно создана\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(jsonData.status).to.eql(\"new\");",
+									"    pm.expect(jsonData.items.length).to.eql(2);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"invoiceNumber\": \"INV-TEST-001\",\n  \"barcode\": \"INV-BARCODE-001\",\n  \"items\": [\n    {\n      \"id\": \"ITEM-001\",\n      \"productId\": \"PROD-001\",\n      \"sku\": \"SKU-001\",\n      \"name\": \"Тестовый товар 1\",\n      \"barcode\": \"BARCODE-001\",\n      \"expectedQuantity\": 50\n    },\n    {\n      \"id\": \"ITEM-002\",\n      \"productId\": \"PROD-002\",\n      \"sku\": \"SKU-002\",\n      \"name\": \"Тестовый товар 2\",\n      \"barcode\": \"BARCODE-002\",\n      \"expectedQuantity\": 30\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receiving",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receiving"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Начало обработки накладной",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Накладная переведена в обработку\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"in_progress\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"barcode\": \"INV-BARCODE-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receiving/{{invoiceId}}/scan",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receiving",
+								"{{invoiceId}}",
+								"scan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 Сканирование товара 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товар 1 отсканирован\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"scanned\");",
+									"    pm.expect(jsonData.id).to.eql(\"ITEM-001\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"barcode\": \"BARCODE-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receiving/{{invoiceId}}/items/ITEM-001/scan",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receiving",
+								"{{invoiceId}}",
+								"items",
+								"ITEM-001",
+								"scan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 Подсчет товара 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товар 1 подсчитан\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"counted\");",
+									"    pm.expect(jsonData.actualQuantity).to.eql(45);",
+									"    pm.expect(jsonData.placementCartId).to.eql(pm.globals.get(\"cartId\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"actualQuantity\": 45,\n  \"placementCartId\": \"{{cartId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receiving/{{invoiceId}}/items/ITEM-001/count",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receiving",
+								"{{invoiceId}}",
+								"items",
+								"ITEM-001",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5 Сканирование товара 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товар 2 отсканирован\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"scanned\");",
+									"    pm.expect(jsonData.id).to.eql(\"ITEM-002\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"barcode\": \"BARCODE-002\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receiving/{{invoiceId}}/items/ITEM-002/scan",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receiving",
+								"{{invoiceId}}",
+								"items",
+								"ITEM-002",
+								"scan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.6 Подсчет товара 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товар 2 подсчитан\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"counted\");",
+									"    pm.expect(jsonData.actualQuantity).to.eql(30);",
+									"    pm.expect(jsonData.placementCartId).to.eql(pm.globals.get(\"cartId\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"actualQuantity\": 30,\n  \"placementCartId\": \"{{cartId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receiving/{{invoiceId}}/items/ITEM-002/count",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receiving",
+								"{{invoiceId}}",
+								"items",
+								"ITEM-002",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.7 Завершение накладной",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Накладная завершена\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.status).to.eql(\"accepted_with_discrepancies\");",
+									"    pm.expect(jsonData.items[0].actualQuantity).to.eql(45);",
+									"    pm.expect(jsonData.items[1].actualQuantity).to.eql(30);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receiving/{{invoiceId}}/complete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receiving",
+								"{{invoiceId}}",
+								"complete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Размещение товаров",
+			"item": [
+				{
+					"name": "3.1 Размещение товара 1 (частично)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Часть товара 1 размещена\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.inventory.sku).to.eql(\"SKU-001\");",
+									"    pm.expect(jsonData.inventory.quantity).to.eql(20);",
+									"    pm.expect(jsonData.location.usedCapacity).to.eql(20);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"locationId\": \"{{locationId1}}\",\n  \"quantity\": 20\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/invoices/{{invoiceId}}/items/ITEM-001/place",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"invoices",
+								"{{invoiceId}}",
+								"items",
+								"ITEM-001",
+								"place"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 Размещение товара 1 (остаток)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Остаток товара 1 размещен\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.inventory.sku).to.eql(\"SKU-001\");",
+									"    pm.expect(jsonData.inventory.quantity).to.eql(25);",
+									"    pm.expect(jsonData.location.usedCapacity).to.eql(45);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"locationId\": \"{{locationId1}}\",\n  \"quantity\": 25\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/invoices/{{invoiceId}}/items/ITEM-001/place",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"invoices",
+								"{{invoiceId}}",
+								"items",
+								"ITEM-001",
+								"place"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.3 Размещение товара 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Товар 2 полностью размещен\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.inventory.sku).to.eql(\"SKU-002\");",
+									"    pm.expect(jsonData.inventory.quantity).to.eql(30);",
+									"    pm.expect(jsonData.location.usedCapacity).to.eql(75);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"locationId\": \"{{locationId1}}\",\n  \"quantity\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/invoices/{{invoiceId}}/items/ITEM-002/place",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"invoices",
+								"{{invoiceId}}",
+								"items",
+								"ITEM-002",
+								"place"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.4 Проверка инвентаря",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Инвентарь содержит размещенные товары\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.length).to.be.at.least(3);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/inventory",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Проверки",
+			"item": [
+				{
+					"name": "4.1 Проверка статуса тележки",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Тележка должна быть свободна\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData).to.have.property('status', 'free');",
+									"    pm.expect(jsonData.items).to.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/placement-carts/{{cartId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"placement-carts",
+								"{{cartId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.2 Проверка статуса ячейки",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Ячейка должна быть зарезервирована\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData).to.have.property('status', 'reserved');",
+									"    pm.expect(jsonData.usedCapacity).to.eql(75);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations/{{locationId1}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations",
+								"{{locationId1}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/wms/v1",
+			"type": "string"
+		}
+	]
+}

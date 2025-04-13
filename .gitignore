@@ -1,4 +1,25 @@
+# Игнорировать временные результаты Allure
 allure-results/
+allure-report/
+
+# Игнорировать node_modules
 node_modules/
+
+# Игнорировать экспортированные артефакты
+export/
+history/
+widgets/
+plugin/
+reports/
+
+# Игнорировать все JSON-файлы
 *.json
+
+# Но не эти:
+!collections/*.json
+!environments/*.json
 !package.json
+
+# Прочее
+.DS_Store
+*.log
