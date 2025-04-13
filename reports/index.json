@@ -1,6 +1,14 @@
-[ {
-  "type": "smoke",
-  "date": "2025-04-13_20-22-36",
-  "url": "reports/smoke/2025-04-13_20-22-36/index.html",
-  "status": "failed"
-} ]
+[
+  {
+    "type": "smoke",
+    "date": "2025-04-13_20-22-36",
+    "url": "reports/smoke/2025-04-13_20-22-36/index.html",
+    "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-04-13_20-22-48",
+    "url": "reports/regress/2025-04-13_20-22-48/index.html",
+    "status": "failed"
+  }
+]
