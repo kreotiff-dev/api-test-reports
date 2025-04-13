@@ -14,63 +14,63 @@
     h1 {
       color: #ff6600;
     }
-    .history {
+    h2 {
       margin-top: 40px;
     }
     .report-list {
-      list-style-type: none;
-      padding: 0;
+      margin-top: 10px;
+      padding-left: 20px;
     }
-    .report-list li {
-      padding: 10px;
-      background: #fff;
-      border: 1px solid #ddd;
-      margin-bottom: 10px;
-      border-radius: 4px;
+    .report-item {
+      margin-bottom: 8px;
     }
-    .report-list a {
+    .report-link {
+      color: #0066cc;
       text-decoration: none;
-      color: #007acc;
     }
-    .report-list .status-pass {
-      color: green;
+    .report-link:hover {
+      text-decoration: underline;
     }
-    .report-list .status-fail {
+    .error {
       color: red;
     }
   </style>
 </head>
 <body>
   <h1>API Test Reports</h1>
-
-  <div class="history">
-    <h2>Последние отчёты</h2>
-    <ul class="report-list" id="reportList">
-      <li>Загрузка отчётов...</li>
-    </ul>
-  </div>
+  <h2>Последние отчёты</h2>
+  <div id="reports" class="report-list">Загрузка...</div>
 
   <script>
-    async function loadReports() {
-      try {
-        const response = await fetch('reports/history.json');
-        const data = await response.json();
+    fetch('reports/index.json')
+      .then(response => {
+        if (!response.ok) throw new Error("Ошибка загрузки index.json");
+        return response.json();
+      })
+      .then(data => {
+        const container = document.getElementById("reports");
+        container.innerHTML = "";
+        if (data.length === 0) {
+          container.innerText = "Пока нет отчётов.";
+          return;
+        }
 
-        const list = document.getElementById('reportList');
-        list.innerHTML = '';
+        data.forEach(report => {
+          const link = document.createElement("a");
+          link.href = report.url;
+          link.innerText = `${report.type.toUpperCase()} – ${report.date}`;
+          link.className = "report-link";
 
-        data.slice(0, 10).forEach(report => {
-          const li = document.createElement('li');
-          const statusClass = report.status === 'pass' ? 'status-pass' : 'status-fail';
-          li.innerHTML = `<a href="${report.link}" target="_blank">${report.date} — <span class="${statusClass}">${report.status}</span></a>`;
-          list.appendChild(li);
+          const div = document.createElement("div");
+          div.className = "report-item";
+          div.appendChild(link);
+          container.appendChild(div);
         });
-      } catch (e) {
-        document.getElementById('reportList').innerHTML = '<li>Ошибка загрузки отчётов.</li>';
-      }
-    }
-
-    loadReports();
+      })
+      .catch(err => {
+        document.getElementById("reports").innerHTML = '<span class="error">Ошибка загрузки отчётов.</span>';
+        console.error(err);
+      });
   </script>
 </body>
 </html>
