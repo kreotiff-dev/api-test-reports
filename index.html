@@ -46,6 +46,7 @@
     .then(response => response.json())
     .then(data => {
       const container = document.getElementById('reports');
+	  container.innerHTML = '';
       data.reverse().slice(0, 10).forEach(report => {
         const li = document.createElement('li');
 
