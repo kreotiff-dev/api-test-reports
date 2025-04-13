@@ -1,4 +1,3 @@
-[
   {
     "type": "regress",
     "date": "2025-04-13_18-31-55",
@@ -19,4 +18,6 @@
     "date": "2025-04-13_18-20-50",
     "url": "reports/regress/2025-04-13_18-20-50/index.html"
   }
+,
+{"type": "smoke", "date": "2025-04-13_18-37-03", "url": "reports/smoke/2025-04-13_18-37-03/index.html", "status": "passed"}
 ]
