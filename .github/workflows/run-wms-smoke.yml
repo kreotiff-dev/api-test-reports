@@ -1,4 +1,4 @@
-name: Run WMS smoke Tests
+name: Run WMS Smoke Tests
 
 on:
   workflow_dispatch:
@@ -22,7 +22,11 @@ jobs:
         run: |
           npm install -g newman newman-reporter-allure allure-commandline
 
-      - name: Run Newman tests
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "ts=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+
+      - name: Run Newman smoke tests
         run: |
           newman run collections/WMS-smoke.json -e environments/env-wms.json -r cli,allure --reporter-allure-export allure-results || true
 
@@ -30,33 +34,33 @@ jobs:
         run: |
           allure generate allure-results -o allure-report --clean
 
-      - name: Publish report to GitHub Pages
+      - name: Publish smoke report and update index
         run: |
-          export REPORT_TYPE=smoke
-          export REPORT_DIR=reports/$REPORT_TYPE/$(date +'%Y-%m-%d_%H-%M-%S')
-
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin gh-pages || echo "No gh-pages yet"
+          git fetch origin gh-pages || echo "no gh-pages yet"
           git switch gh-pages || git checkout --orphan gh-pages
 
-          mkdir -p $REPORT_DIR
-          cp -r allure-report/* $REPORT_DIR/
+          REPORT_DIR="reports/smoke/${{ steps.timestamp.outputs.ts }}"
+          mkdir -p "$REPORT_DIR"
+          cp -r allure-report/* "$REPORT_DIR/"
           touch .nojekyll
 
-          # Добавим запись об отчёте в index.json
-          mkdir -p reports
-          if [ -f reports/index.json ]; then
-            tail -n +2 reports/index.json | sed '$ d' > tmp.json || true
-            echo "," >> tmp.json
+          INDEX_FILE="reports/index.json"
+          REPORT_INFO="{\"type\": \"smoke\", \"date\": \"${{ steps.timestamp.outputs.ts }}\", \"url\": \"$REPORT_DIR/index.html\"}"
+
+          if [ -f "$INDEX_FILE" ]; then
+            CONTENT=$(cat "$INDEX_FILE" | jq .)
           else
-            echo "[" > tmp.json
+            CONTENT="[]"
           fi
-          echo "{\"type\": \"$REPORT_TYPE\", \"date\": \"$(basename $REPORT_DIR)\", \"url\": \"$REPORT_DIR/index.html\"}" >> tmp.json
-          echo "]" >> tmp.json
-          mv tmp.json reports/index.json
+
+          UPDATED=$(echo "$CONTENT" | jq "[ $REPORT_INFO ] + . | .[:10]")
+          echo "$UPDATED" > "$INDEX_FILE"
 
           git add .
-          git commit -m "Publish $REPORT_TYPE report: $REPORT_DIR"
+          git commit -m "Publish smoke report at $REPORT_DIR"
           git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
