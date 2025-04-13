@@ -60,7 +60,7 @@ jobs:
             --arg status "$STATUS" \
             '{type: $type, date: $date, url: $url, status: $status}')
 
-          if [ -f reports/index.json ]; then
+          if [ -f reports/index.json ] && jq empty reports/index.json 2>/dev/null; then
             jq ". + [ $NEW_RECORD ]" reports/index.json > tmp.json && mv tmp.json reports/index.json
           else
             echo "[ $NEW_RECORD ]" > reports/index.json
