@@ -45,25 +45,24 @@ jobs:
           cp -r allure-report/* $REPORT_DIR/
           touch .nojekyll
 
-          # Определим статус отчета
+          # Определим статус
           if grep -q '"status":"failed"' allure-results/widgets/summary.json; then
             STATUS=failed
           else
             STATUS=passed
           fi
 
-          # Добавим запись об отчёте в index.json
+          # Обновим index.json корректно
           mkdir -p reports
+          TMP_FILE=$(mktemp)
           if [ -f reports/index.json ]; then
-            tail -n +2 reports/index.json | sed '$ d' > tmp.json || true
-            echo "," >> tmp.json
+            jq ". + [{\"type\": \"$REPORT_TYPE\", \"date\": \"$(basename $REPORT_DIR)\", \"url\": \"$REPORT_DIR/index.html\", \"status\": \"$STATUS\"}]" reports/index.json > "$TMP_FILE"
           else
-            echo "[" > tmp.json
+            echo "[{\"type\": \"$REPORT_TYPE\", \"date\": \"$(basename $REPORT_DIR)\", \"url\": \"$REPORT_DIR/index.html\", \"status\": \"$STATUS\"}]" > "$TMP_FILE"
           fi
-          echo "{\"type\": \"$REPORT_TYPE\", \"date\": \"$(basename $REPORT_DIR)\", \"url\": \"$REPORT_DIR/index.html\", \"status\": \"$STATUS\"}" >> tmp.json
-          echo "]" >> tmp.json
-          mv tmp.json reports/index.json
+          mv "$TMP_FILE" reports/index.json
 
           git add .
           git commit -m "Publish $REPORT_TYPE report: $REPORT_DIR"
+          git pull --rebase origin gh-pages || true
           git push origin gh-pages
