@@ -45,7 +45,7 @@
   fetch('reports/index.json')
     .then(response => response.json())
     .then(data => {
-      const container = document.getElementById('report-list');
+      const container = document.getElementById('reports');
       data.reverse().slice(0, 10).forEach(report => {
         const li = document.createElement('li');
 
@@ -63,7 +63,7 @@
       });
     })
     .catch(error => {
-      document.getElementById('report-list').innerHTML = '<li>Ошибка загрузки отчётов.</li>';
+      document.getElementById('reports').innerHTML = '<li>Ошибка загрузки отчётов.</li>';
       console.error('Error:', error);
     });
 </script>
