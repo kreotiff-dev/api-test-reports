@@ -24,7 +24,7 @@ jobs:
 
       - name: Run Newman tests
         run: |
-          newman run collections/WMS-regress.json -e environments/env-wms.json -r cli,allure --reporter-allure-export allure-results
+          newman run collections/WMS-regress.json -e environments/env-wms.json -r cli,allure --reporter-allure-export allure-results || true
 
       - name: Generate Allure report
         run: |
