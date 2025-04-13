@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.GH_PAT }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -31,25 +30,36 @@ jobs:
         run: |
           allure generate allure-results -o allure-report --clean
 
-      - name: Publish Allure report to gh-pages
+      - name: Publish report to gh-pages
         run: |
-          REPORT_DIR=reports/regress/$(date +'%Y-%m-%d_%H-%M-%S')
+          export REPORT_TYPE=regress
+          export REPORT_DATE=$(date +'%Y-%m-%d_%H-%M-%S')
+          export REPORT_DIR=reports/$REPORT_TYPE/$REPORT_DATE
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages || echo "No gh-pages yet"
+          git switch gh-pages || git checkout --orphan gh-pages
+
           mkdir -p $REPORT_DIR
           cp -r allure-report/* $REPORT_DIR/
 
-          # Клонируем только ветку gh-pages
-          git clone --single-branch --branch gh-pages https://x-access-token:${GH_PAT}@github.com/${{ github.repository }} gh-pages
+          # Обновим index.json
+          INDEX_FILE=index.json
+          TMP_FILE=index_tmp.json
+          echo "[{\"type\": \"$REPORT_TYPE\", \"date\": \"$REPORT_DATE\", \"url\": \"$REPORT_DIR/index.html\"}]" > $TMP_FILE
+          if [ -f $INDEX_FILE ]; then
+            jq -s '.[0] + .[1]' $TMP_FILE $INDEX_FILE | jq 'sort_by(.date) | reverse | .[:10]' > $INDEX_FILE
+          else
+            mv $TMP_FILE $INDEX_FILE
+          fi
 
-          cd gh-pages
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          rm -f $TMP_FILE
 
-          mkdir -p $REPORT_DIR
-          cp -r ../$REPORT_DIR/* $REPORT_DIR/
           touch .nojekyll
-
           git add .
-          git commit -m "Publish regress report: $REPORT_DIR"
+          git commit -m "Publish $REPORT_TYPE report: $REPORT_DIR"
           git push origin gh-pages
+
         env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
