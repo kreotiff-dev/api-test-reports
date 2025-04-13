@@ -1,1 +1,0 @@
-{"error":"E11000 duplicate key error collection: mywarehouse.invoices index: invoiceNumber_1 dup key: { invoiceNumber: \"INV-TEST-001\" }"}

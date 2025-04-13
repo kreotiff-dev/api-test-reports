@@ -1,4 +1,0 @@
-{
-  "locationId": "null",
-  "quantity": 20
-}

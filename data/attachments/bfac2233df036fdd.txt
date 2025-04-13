@@ -1,4 +1,0 @@
-{
-  "pickingItemId": "{{test_picking_item_id_1}}",
-  "quantity": 2
-}

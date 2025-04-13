@@ -1,4 +1,0 @@
-{
-  "locationBarcode": "{{test_location_barcode}}",
-  "pickingItemId": "{{test_picking_item_id_1}}"
-}

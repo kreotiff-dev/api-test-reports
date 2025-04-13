@@ -1,3 +1,0 @@
-{
-  "barcode": "INV-BARCODE-001"
-}
