@@ -30,36 +30,33 @@ jobs:
         run: |
           allure generate allure-results -o allure-report --clean
 
-      - name: Publish report to gh-pages
+      - name: Publish report to GitHub Pages
         run: |
           export REPORT_TYPE=regress
-          export REPORT_DATE=$(date +'%Y-%m-%d_%H-%M-%S')
-          export REPORT_DIR=reports/$REPORT_TYPE/$REPORT_DATE
+          export REPORT_DIR=reports/$REPORT_TYPE/$(date +'%Y-%m-%d_%H-%M-%S')
 
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
           git fetch origin gh-pages || echo "No gh-pages yet"
           git switch gh-pages || git checkout --orphan gh-pages
 
           mkdir -p $REPORT_DIR
           cp -r allure-report/* $REPORT_DIR/
-
-          # Обновим index.json
-          INDEX_FILE=index.json
-          TMP_FILE=index_tmp.json
-          echo "[{\"type\": \"$REPORT_TYPE\", \"date\": \"$REPORT_DATE\", \"url\": \"$REPORT_DIR/index.html\"}]" > $TMP_FILE
-          if [ -f $INDEX_FILE ]; then
-            jq -s '.[0] + .[1]' $TMP_FILE $INDEX_FILE | jq 'sort_by(.date) | reverse | .[:10]' > $INDEX_FILE
-          else
-            mv $TMP_FILE $INDEX_FILE
-          fi
-
-          rm -f $TMP_FILE
-
           touch .nojekyll
+
+          # Добавим запись об отчёте в index.json
+          mkdir -p reports
+          if [ -f reports/index.json ]; then
+            tail -n +2 reports/index.json | sed '$ d' > tmp.json || true
+            echo "," >> tmp.json
+          else
+            echo "[" > tmp.json
+          fi
+          echo "{\"type\": \"$REPORT_TYPE\", \"date\": \"$(basename $REPORT_DIR)\", \"url\": \"$REPORT_DIR/index.html\"}" >> tmp.json
+          echo "]" >> tmp.json
+          mv tmp.json reports/index.json
+
           git add .
           git commit -m "Publish $REPORT_TYPE report: $REPORT_DIR"
           git push origin gh-pages
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
