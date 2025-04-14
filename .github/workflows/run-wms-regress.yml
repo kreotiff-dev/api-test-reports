@@ -2,7 +2,7 @@ name: Run WMS Regress Tests
 
 on:
   schedule:
-      - cron: '0 0 0 * * *'
+    - cron: '0 0 * * *'  # каждый день в 00:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -47,7 +47,6 @@ jobs:
           cp -r allure-report/* $REPORT_DIR/
           touch .nojekyll
 
-          # Добавим запись об отчёте в index.json
           mkdir -p reports
 
           STATUS="unknown"
