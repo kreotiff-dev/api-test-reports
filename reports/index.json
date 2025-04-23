@@ -70,5 +70,11 @@
     "date": "2025-04-22_01-58-13",
     "url": "reports/regress/2025-04-22_01-58-13/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-04-23_01-58-45",
+    "url": "reports/regress/2025-04-23_01-58-45/index.html",
+    "status": "failed"
   }
 ]
