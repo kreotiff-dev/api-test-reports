@@ -190,5 +190,11 @@
     "date": "2025-05-12_02-06-12",
     "url": "reports/regress/2025-05-12_02-06-12/index.html",
     "status": "failed"
+  },
+  {
+    "type": "smoke",
+    "date": "2025-05-12_18-34-55",
+    "url": "reports/smoke/2025-05-12_18-34-55/index.html",
+    "status": "failed"
   }
 ]
