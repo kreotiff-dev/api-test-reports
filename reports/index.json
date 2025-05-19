@@ -232,5 +232,11 @@
     "date": "2025-05-18_02-09-57",
     "url": "reports/regress/2025-05-18_02-09-57/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-05-19_02-08-36",
+    "url": "reports/regress/2025-05-19_02-08-36/index.html",
+    "status": "failed"
   }
 ]
