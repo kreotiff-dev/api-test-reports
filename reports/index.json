@@ -310,5 +310,11 @@
     "date": "2025-05-31_02-01-40",
     "url": "reports/regress/2025-05-31_02-01-40/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-06-01_02-29-25",
+    "url": "reports/regress/2025-06-01_02-29-25/index.html",
+    "status": "failed"
   }
 ]
