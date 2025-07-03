@@ -502,5 +502,11 @@
     "date": "2025-07-02_02-08-00",
     "url": "reports/regress/2025-07-02_02-08-00/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-07-03_02-08-31",
+    "url": "reports/regress/2025-07-03_02-08-31/index.html",
+    "status": "failed"
   }
 ]
