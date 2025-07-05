@@ -514,5 +514,11 @@
     "date": "2025-07-04_02-07-37",
     "url": "reports/regress/2025-07-04_02-07-37/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-07-05_02-03-35",
+    "url": "reports/regress/2025-07-05_02-03-35/index.html",
+    "status": "failed"
   }
 ]
