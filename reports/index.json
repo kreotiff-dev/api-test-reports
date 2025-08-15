@@ -760,5 +760,11 @@
     "date": "2025-08-14_02-09-29",
     "url": "reports/regress/2025-08-14_02-09-29/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-08-15_02-10-03",
+    "url": "reports/regress/2025-08-15_02-10-03/index.html",
+    "status": "failed"
   }
 ]
