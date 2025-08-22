@@ -802,5 +802,11 @@
     "date": "2025-08-21_01-59-31",
     "url": "reports/regress/2025-08-21_01-59-31/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-08-22_02-00-30",
+    "url": "reports/regress/2025-08-22_02-00-30/index.html",
+    "status": "failed"
   }
 ]
