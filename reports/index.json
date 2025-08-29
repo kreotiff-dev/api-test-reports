@@ -844,5 +844,11 @@
     "date": "2025-08-28_01-56-41",
     "url": "reports/regress/2025-08-28_01-56-41/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-08-29_01-56-43",
+    "url": "reports/regress/2025-08-29_01-56-43/index.html",
+    "status": "failed"
   }
 ]
