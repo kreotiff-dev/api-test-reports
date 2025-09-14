@@ -940,5 +940,11 @@
     "date": "2025-09-13_01-45-43",
     "url": "reports/regress/2025-09-13_01-45-43/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-09-14_01-59-36",
+    "url": "reports/regress/2025-09-14_01-59-36/index.html",
+    "status": "failed"
   }
 ]
