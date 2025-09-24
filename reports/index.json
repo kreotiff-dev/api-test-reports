@@ -1000,5 +1000,11 @@
     "date": "2025-09-23_01-52-37",
     "url": "reports/regress/2025-09-23_01-52-37/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-09-24_01-54-01",
+    "url": "reports/regress/2025-09-24_01-54-01/index.html",
+    "status": "failed"
   }
 ]
