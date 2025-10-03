@@ -1054,5 +1054,11 @@
     "date": "2025-10-02_01-52-41",
     "url": "reports/regress/2025-10-02_01-52-41/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-10-03_01-52-08",
+    "url": "reports/regress/2025-10-03_01-52-08/index.html",
+    "status": "failed"
   }
 ]
