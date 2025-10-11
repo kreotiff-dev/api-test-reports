@@ -24,10 +24,9 @@ jobs:
           mkdir -p reports
 
       - name: Run Newman
-        # сохраняем отчёт даже если есть фейлы
         run: |
           newman run collections/WMS-smoke.json \
-            -e environment/env-wms.json \
+            -e environments/env-wms.json \
             -r cli,htmlextra \
             --reporter-htmlextra-export reports/report.html || true
 
