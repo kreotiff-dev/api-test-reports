@@ -1,0 +1,46 @@
+name: Run Newman (daily)
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # каждый день 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  newman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - run: |
+          npm i -g newman newman-reporter-htmlextra
+          mkdir -p reports
+      - name: Run Newman
+        run: |
+          newman run collections/Collection.postman_collection.json \
+            -e environment/dev-env.json \
+            -r cli,htmlextra \
+            --reporter-htmlextra-export reports/index.html
+        continue-on-error: true
+      - name: Upload Pages artifact
+        if: ${{ always() }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: reports
+  deploy:
+    needs: newman
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
