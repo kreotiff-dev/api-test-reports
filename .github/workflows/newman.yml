@@ -1,46 +1,39 @@
-name: Run Newman (daily)
+name: Run Newman (artifact only)
 
 on:
   schedule:
     - cron: '0 3 * * *'   # каждый день 03:00 UTC
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
   newman:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - run: |
+
+      - name: Install Newman
+        run: |
           npm i -g newman newman-reporter-htmlextra
           mkdir -p reports
+
       - name: Run Newman
+        # сохраняем отчёт даже если есть фейлы
         run: |
-          newman run collections/Collection.postman_collection.json \
-            -e environment/dev-env.json \
+          newman run collections/WMS-smoke.json \
+            -e environment/env-wms.json \
             -r cli,htmlextra \
-            --reporter-htmlextra-export reports/index.html
-        continue-on-error: true
-      - name: Upload Pages artifact
+            --reporter-htmlextra-export reports/report.html || true
+
+      - name: Upload HTML report artifact
         if: ${{ always() }}
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          path: reports
-  deploy:
-    needs: newman
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          name: newman-html-report
+          path: reports/report.html
