@@ -1354,5 +1354,11 @@
     "date": "2025-11-21_02-49-00",
     "url": "reports/regress/2025-11-21_02-49-00/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2025-11-22_01-57-50",
+    "url": "reports/regress/2025-11-22_01-57-50/index.html",
+    "status": "failed"
   }
 ]
