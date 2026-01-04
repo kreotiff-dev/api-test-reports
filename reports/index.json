@@ -1612,5 +1612,11 @@
     "date": "2026-01-03_02-07-31",
     "url": "reports/regress/2026-01-03_02-07-31/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-01-04_02-31-03",
+    "url": "reports/regress/2026-01-04_02-31-03/index.html",
+    "status": "failed"
   }
 ]
