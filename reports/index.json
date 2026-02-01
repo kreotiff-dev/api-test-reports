@@ -1744,5 +1744,11 @@
     "date": "2026-01-31_02-37-01",
     "url": "reports/regress/2026-01-31_02-37-01/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-02-01_03-18-58",
+    "url": "reports/regress/2026-02-01_03-18-58/index.html",
+    "status": "failed"
   }
 ]
