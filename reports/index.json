@@ -1960,5 +1960,11 @@
     "date": "2026-03-08_02-48-12",
     "url": "reports/regress/2026-03-08_02-48-12/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-03-09_02-49-21",
+    "url": "reports/regress/2026-03-09_02-49-21/index.html",
+    "status": "failed"
   }
 ]
