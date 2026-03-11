@@ -1972,5 +1972,11 @@
     "date": "2026-03-10_02-40-58",
     "url": "reports/regress/2026-03-10_02-40-58/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-03-11_02-40-16",
+    "url": "reports/regress/2026-03-11_02-40-16/index.html",
+    "status": "failed"
   }
 ]
