@@ -1978,5 +1978,11 @@
     "date": "2026-03-11_02-40-16",
     "url": "reports/regress/2026-03-11_02-40-16/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-03-12_02-45-54",
+    "url": "reports/regress/2026-03-12_02-45-54/index.html",
+    "status": "failed"
   }
 ]
