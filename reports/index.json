@@ -2014,5 +2014,11 @@
     "date": "2026-03-17_02-46-08",
     "url": "reports/regress/2026-03-17_02-46-08/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-03-18_02-52-32",
+    "url": "reports/regress/2026-03-18_02-52-32/index.html",
+    "status": "failed"
   }
 ]
