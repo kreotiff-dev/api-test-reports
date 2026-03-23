@@ -2044,5 +2044,11 @@
     "date": "2026-03-22_02-54-47",
     "url": "reports/regress/2026-03-22_02-54-47/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-03-23_02-54-40",
+    "url": "reports/regress/2026-03-23_02-54-40/index.html",
+    "status": "failed"
   }
 ]
