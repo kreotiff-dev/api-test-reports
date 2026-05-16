@@ -2368,5 +2368,11 @@
     "date": "2026-05-15_04-06-57",
     "url": "reports/regress/2026-05-15_04-06-57/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-05-16_03-49-59",
+    "url": "reports/regress/2026-05-16_03-49-59/index.html",
+    "status": "failed"
   }
 ]
