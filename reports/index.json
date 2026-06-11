@@ -2518,5 +2518,11 @@
     "date": "2026-06-10_04-24-27",
     "url": "reports/regress/2026-06-10_04-24-27/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-06-11_04-46-42",
+    "url": "reports/regress/2026-06-11_04-46-42/index.html",
+    "status": "failed"
   }
 ]
