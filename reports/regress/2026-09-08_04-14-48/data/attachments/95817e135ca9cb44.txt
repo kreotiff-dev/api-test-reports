@@ -1,0 +1,1 @@
+{"sku":"SKU-1744575757616-1","productName":"Тестовый товар для заказа 1","locationId":"67fc1d0d3b68860e539c085c","locationBarcode":"LOC-TEST-1744575758","previousQuantity":0,"actualQuantity":50,"adjustment":50,"notes":"Добавление тестового товара 1 в инвентарь","timestamp":"2025-04-13T20:22:38.429Z"}
