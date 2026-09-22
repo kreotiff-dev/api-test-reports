@@ -1,0 +1,2 @@
+level: log, messages: Установлен test_location_id: 67fbba5e3b68860e539c02e0
+level: log, messages: Установлен test_location_barcode: LOC-TEST-1744550494
