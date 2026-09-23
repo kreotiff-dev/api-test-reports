@@ -1,0 +1,1 @@
+{"barcode":"LOC-TEST-1744568443","zone":"A","aisle":"01","rack":"01","level":"01","position":"01","status":"available","capacity":100,"usedCapacity":0,"_id":"67fc007b3b68860e539c05af","createdAt":"2025-04-13T18:20:43.190Z","__v":0}
