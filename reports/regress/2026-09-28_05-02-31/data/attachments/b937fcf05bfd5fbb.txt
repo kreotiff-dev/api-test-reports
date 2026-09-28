@@ -1,0 +1,2 @@
+level: warn, messages: Using "postman.setNextRequest" is deprecated. Use "pm.execution.setNextRequest()" instead.
+level: log, messages: Создана тестовая ячейка: 680aec903b68860e539c137a
