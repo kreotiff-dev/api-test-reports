@@ -1,0 +1,4 @@
+level: log, messages: Уникальные значения сгенерированы:
+level: log, messages: Номер заказа: ORD-1755050918926
+level: log, messages: SKU 1: SKU-1755050918926-1
+level: log, messages: SKU 2: SKU-1755050918926-2
