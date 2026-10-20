@@ -1,0 +1,11 @@
+{
+    "Server": "nginx/1.18.0 (Ubuntu)",
+    "Date": "Thu, 14 Aug 2025 02:09:20 GMT",
+    "Content-Type": "text/html; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "X-Powered-By": "Express",
+    "Content-Security-Policy": "default-src 'none'",
+    "X-Content-Type-Options": "nosniff",
+    "Content-Encoding": "gzip"
+}
