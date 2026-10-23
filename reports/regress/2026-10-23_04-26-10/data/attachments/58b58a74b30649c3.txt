@@ -1,0 +1,6 @@
+{
+  "sku": "SKU-1760579913459-2",
+  "locationId": "{{test_location_id}}",
+  "actualQuantity": 30,
+  "notes": "Добавление тестового товара 2 в инвентарь"
+}
