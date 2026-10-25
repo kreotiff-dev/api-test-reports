@@ -1,0 +1,4 @@
+{
+  "locationBarcode": "LOC-TEST-1745200994",
+  "pickingItemId": "6805a7633b68860e539c0e98"
+}
