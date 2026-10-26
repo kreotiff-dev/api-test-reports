@@ -3340,5 +3340,11 @@
     "date": "2026-10-25_04-20-01",
     "url": "reports/regress/2026-10-25_04-20-01/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-10-26_05-10-45",
+    "url": "reports/regress/2026-10-26_05-10-45/index.html",
+    "status": "failed"
   }
 ]
