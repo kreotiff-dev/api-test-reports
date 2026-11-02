@@ -1,0 +1,4 @@
+{
+  "pickingItemId": "6808494e3b68860e539c105a",
+  "quantity": 3
+}
