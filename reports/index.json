@@ -3424,5 +3424,11 @@
     "date": "2026-11-08_05-43-04",
     "url": "reports/regress/2026-11-08_05-43-04/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-11-09_05-53-19",
+    "url": "reports/regress/2026-11-09_05-53-19/index.html",
+    "status": "failed"
   }
 ]
