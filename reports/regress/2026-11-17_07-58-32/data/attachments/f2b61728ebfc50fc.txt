@@ -1,0 +1,20 @@
+{
+  "orderNumber": "ORD-1761444258417",
+  "externalOrderId": "EXT-1761444260",
+  "customer": {
+    "name": "Иван Петров",
+    "address": "ул. Пушкина, д. 10",
+    "phone": "+7(123)456-78-90",
+    "email": "test@example.com"
+  },
+  "items": [
+    {
+      "sku": "SKU-1761444258417-1",
+      "quantity": 2
+    },
+    {
+      "sku": "SKU-1761444258417-2",
+      "quantity": 3
+    }
+  ]
+}
