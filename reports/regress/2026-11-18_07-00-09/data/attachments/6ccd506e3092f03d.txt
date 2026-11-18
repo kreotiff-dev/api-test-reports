@@ -1,0 +1,7 @@
+var jsonData = pm.response.json();
+
+pm.test("Задание переведено в работу", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData.status).to.eql("in_progress");
+    pm.expect(jsonData.startedAt).to.not.be.undefined;
+});

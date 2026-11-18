@@ -1,0 +1,14 @@
+var jsonData = pm.response.json();
+
+pm.test("Заказ по ID успешно получен", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData.orderNumber).to.eql(pm.globals.get("order_number"));
+    pm.expect(jsonData.status).to.eql("new");
+    
+    // Проверяем наличие товаров
+    pm.expect(jsonData.items.length).to.eql(2);
+    
+    // Проверяем данные клиента
+    pm.expect(jsonData.customer).to.have.property('name');
+    pm.expect(jsonData.customer.name).to.eql("Иван Петров");
+});
