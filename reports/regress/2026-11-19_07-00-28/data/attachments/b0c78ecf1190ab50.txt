@@ -1,0 +1,4 @@
+{
+  "locationBarcode": "null",
+  "pickingItemId": "{{test_picking_item_id_2}}"
+}
