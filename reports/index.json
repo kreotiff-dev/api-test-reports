@@ -3496,5 +3496,11 @@
     "date": "2026-11-20_06-53-22",
     "url": "reports/regress/2026-11-20_06-53-22/index.html",
     "status": "failed"
+  },
+  {
+    "type": "regress",
+    "date": "2026-11-21_06-47-58",
+    "url": "reports/regress/2026-11-21_06-47-58/index.html",
+    "status": "failed"
   }
 ]

@@ -1,0 +1,14 @@
+var jsonData = pm.response.json();
+
+pm.test("Товары успешно зарезервированы", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData.message).to.eql("Items reserved successfully");
+    
+    // Проверяем статус заказа
+    pm.expect(jsonData.order.status).to.eql("processing");
+    
+    // Проверяем статусы товаров
+    jsonData.order.items.forEach(function(item) {
+        pm.expect(item.status).to.eql("reserved");
+    });
+});

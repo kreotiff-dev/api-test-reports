@@ -1,0 +1,24 @@
+var jsonData = pm.response.json();
+var taskId = jsonData._id || jsonData.id;
+pm.globals.set("test_picking_task_id", taskId);
+
+// Сохраняем ID первого элемента сборки для использования в следующих тестах
+if (jsonData.items && jsonData.items.length > 0) {
+    var firstItemId = jsonData.items[0]._id;
+    pm.globals.set("test_picking_item_id_1", firstItemId);
+    
+    var secondItemId = jsonData.items[1]._id;
+    pm.globals.set("test_picking_item_id_2", secondItemId);
+}
+
+pm.test("Задание на сборку успешно создано", function () {
+    pm.response.to.have.status(201);
+    pm.expect(jsonData.status).to.eql("created");
+    pm.expect(jsonData.items.length).to.eql(2);
+    
+    // Проверяем, что заказ правильно привязан
+    pm.expect(jsonData.orderIds).to.include(pm.globals.get("test_order_id"));
+    
+    // Проверяем сотрудника
+    pm.expect(jsonData.assignedTo).to.eql(pm.globals.get("employee_id"));
+});

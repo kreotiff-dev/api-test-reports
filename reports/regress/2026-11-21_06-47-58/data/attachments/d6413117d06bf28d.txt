@@ -1,0 +1,11 @@
+var jsonData = pm.response.json();
+
+pm.test("Список заказов успешно получен", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).to.be.an('array');
+    
+    // Проверяем, что наш заказ есть в списке
+    var orderNumber = pm.globals.get("order_number");
+    var foundOrder = jsonData.find(order => order.orderNumber === orderNumber);
+    pm.expect(foundOrder).to.not.be.undefined;
+});
