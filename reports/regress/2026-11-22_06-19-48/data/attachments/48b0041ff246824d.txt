@@ -1,0 +1,9 @@
+var jsonData = pm.response.json();
+var locationId = jsonData._id || jsonData.id;
+pm.globals.set("test_location_id", locationId);
+pm.globals.set("test_location_barcode", jsonData.barcode);
+
+pm.test("Тестовая ячейка успешно создана", function () {
+    pm.response.to.have.status(201);
+    console.log("Создана тестовая ячейка: " + locationId);
+});

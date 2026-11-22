@@ -1,0 +1,9 @@
+{
+  "barcode": "LOC-TEST-1788238013",
+  "zone": "A",
+  "aisle": "01",
+  "rack": "01",
+  "level": "01",
+  "position": "01",
+  "capacity": 100
+}

@@ -1,0 +1,7 @@
+var jsonData = pm.response.json();
+
+pm.test("Ячейка успешно отсканирована для второго товара", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData.status).to.eql("in_progress");
+    pm.expect(jsonData._id).to.eql(pm.globals.get("test_picking_item_id_2"));
+});
