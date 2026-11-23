@@ -1,0 +1,13 @@
+var jsonData = pm.response.json();
+
+pm.test("Задание на сборку завершено", function () {
+    pm.response.to.have.status(200);
+    
+    // Ищем наше задание
+    var taskId = pm.globals.get("test_picking_task_id");
+    var task = jsonData.find(t => (t._id === taskId || t.id === taskId));
+    
+    pm.expect(task).to.not.be.undefined;
+    pm.expect(task.status).to.eql("completed");
+    pm.expect(task.completedAt).to.not.be.undefined;
+});

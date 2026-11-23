@@ -1,0 +1,23 @@
+// Генерация уникальных значений
+var timestamp = new Date().getTime();
+
+// Уникальные ID для товаров и заказов
+pm.globals.set("order_number", "ORD-" + timestamp);
+pm.globals.set("product_sku_1", "SKU-" + timestamp + "-1");
+pm.globals.set("product_sku_2", "SKU-" + timestamp + "-2");
+pm.globals.set("product_id_1", "PROD-" + timestamp + "-1");
+pm.globals.set("product_id_2", "PROD-" + timestamp + "-2");
+pm.globals.set("product_barcode_1", "BAR-" + timestamp + "-1");
+pm.globals.set("product_barcode_2", "BAR-" + timestamp + "-2");
+pm.globals.set("employee_id", "EMP-" + timestamp);
+
+console.log("Уникальные значения сгенерированы:");
+console.log("Номер заказа: " + pm.globals.get("order_number"));
+console.log("SKU 1: " + pm.globals.get("product_sku_1"));
+console.log("SKU 2: " + pm.globals.get("product_sku_2"));
+
+pm.test("Уникальные переменные сгенерированы", function () {
+    pm.expect(pm.globals.get("order_number")).to.not.be.undefined;
+    pm.expect(pm.globals.get("product_sku_1")).to.not.be.undefined;
+    pm.expect(pm.globals.get("employee_id")).to.not.be.undefined;
+});
