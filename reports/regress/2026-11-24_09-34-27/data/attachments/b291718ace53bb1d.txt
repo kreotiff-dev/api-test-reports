@@ -1,0 +1,7 @@
+var jsonData = pm.response.json();
+
+pm.test("Товар 1 добавлен в инвентарь", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData.sku).to.eql(pm.globals.get("product_sku_1"));
+    pm.expect(jsonData.actualQuantity).to.eql(50);
+});

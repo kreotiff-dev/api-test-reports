@@ -1,0 +1,1 @@
+{"orderId":"680301ea3b68860e539c0ce0","orderItemId":"680301ea3b68860e539c0ce1","productId":"680301ea3b68860e539c0ccc","sku":"SKU-1745027561884-1","name":"Тестовый товар для заказа 1","quantity":2,"pickedQuantity":0,"locationId":"680301ea3b68860e539c0cc9","status":"in_progress","_id":"680301eb3b68860e539c0d1d"}
