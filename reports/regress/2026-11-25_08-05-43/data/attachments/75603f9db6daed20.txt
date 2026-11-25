@@ -1,0 +1,12 @@
+var jsonData = pm.response.json();
+
+pm.test("Заказ в статусе 'собран'", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData.status).to.eql("picked");
+    
+    // Проверяем статусы товаров
+    jsonData.items.forEach(function(item) {
+        pm.expect(item.status).to.eql("picked");
+        pm.expect(item.pickedQuantity).to.eql(item.quantity);
+    });
+});
