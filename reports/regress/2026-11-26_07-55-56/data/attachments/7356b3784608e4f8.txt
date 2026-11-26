@@ -1,0 +1,8 @@
+var jsonData = pm.response.json();
+
+pm.test("Первый товар успешно собран", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData.pickingItem.pickedQuantity).to.eql(2);
+    pm.expect(jsonData.pickingItem.status).to.eql("picked");
+    pm.expect(jsonData.remainingQuantity).to.eql(0);
+});
