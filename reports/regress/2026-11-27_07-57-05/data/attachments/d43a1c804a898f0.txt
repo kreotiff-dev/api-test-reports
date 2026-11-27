@@ -1,0 +1,11 @@
+var jsonData = pm.response.json();
+
+pm.test("Список заданий на сборку получен", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).to.be.an('array');
+    
+    // Проверяем наличие нашего задания
+    var taskId = pm.globals.get("test_picking_task_id");
+    var foundTask = jsonData.find(task => (task._id === taskId || task.id === taskId));
+    pm.expect(foundTask).to.not.be.undefined;
+});

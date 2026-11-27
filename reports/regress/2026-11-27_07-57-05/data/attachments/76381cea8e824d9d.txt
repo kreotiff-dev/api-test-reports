@@ -1,0 +1,9 @@
+var jsonData = pm.response.json();
+var productId = jsonData._id || jsonData.id;
+pm.globals.set("test_product_id_1", productId);
+
+pm.test("Товар 1 успешно создан", function () {
+    pm.response.to.have.status(201);
+    pm.expect(jsonData.sku).to.eql(pm.globals.get("product_sku_1"));
+    pm.expect(jsonData.name).to.eql("Тестовый товар для заказа 1");
+});

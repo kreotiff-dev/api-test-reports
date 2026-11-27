@@ -1,0 +1,10 @@
+var jsonData = pm.response.json();
+var orderId = jsonData._id || jsonData.id;
+pm.globals.set("test_order_id", orderId);
+
+pm.test("Заказ успешно создан", function () {
+    pm.response.to.have.status(201);
+    pm.expect(jsonData.orderNumber).to.eql(pm.globals.get("order_number"));
+    pm.expect(jsonData.status).to.eql("new");
+    pm.expect(jsonData.items.length).to.eql(2);
+});
