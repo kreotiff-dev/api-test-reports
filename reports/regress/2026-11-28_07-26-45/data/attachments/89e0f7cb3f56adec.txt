@@ -1,0 +1,4 @@
+// Пропускаем запрос, если ячейка уже существует
+if (!pm.globals.get("need_to_create_location")) {
+    postman.setNextRequest("1.1 Создание товара 1");
+}

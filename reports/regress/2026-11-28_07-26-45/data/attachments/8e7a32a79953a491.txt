@@ -1,0 +1,30 @@
+var jsonData = pm.response.json();
+
+pm.test("Инвентарь успешно обновлен", function () {
+    pm.response.to.have.status(200);
+
+    // Находим наши товары в инвентаре
+    var sku1 = pm.globals.get("product_sku_1");
+    var sku2 = pm.globals.get("product_sku_2");
+    
+    var item1 = null;
+    var item2 = null;
+    
+    jsonData.forEach(function(item) {
+        if (item.sku === sku1) {
+            item1 = item;
+        } else if (item.sku === sku2) {
+            item2 = item;
+        }
+    });
+    
+    if (item1) {
+        // Проверяем, что количество уменьшилось на 2
+        pm.expect(item1.quantity).to.eql(48);
+    }
+    
+    if (item2) {
+        // Проверяем, что количество уменьшилось на 3
+        pm.expect(item2.quantity).to.eql(27);
+    }
+});

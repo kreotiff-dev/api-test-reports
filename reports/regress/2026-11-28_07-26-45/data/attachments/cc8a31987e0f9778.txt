@@ -1,0 +1,18 @@
+var jsonData = pm.response.json();
+
+// Используем существующие ячейки, если они есть
+if (jsonData && jsonData.length > 0) {
+    // Берем первую ячейку
+    var locationId = jsonData[0]._id || jsonData[0].id;
+    pm.globals.set("test_location_id", locationId);
+    console.log("Установлен test_location_id: " + locationId);
+    pm.globals.set("test_location_barcode", jsonData[0].barcode);
+    console.log("Установлен test_location_barcode: " + jsonData[0].barcode);
+} else {
+    console.log("Существующие ячейки не найдены, нужно создать новую");
+    pm.globals.set("need_to_create_location", true);
+}
+
+pm.test("Запрос выполнен успешно", function () {
+    pm.response.to.have.status(200);
+});
